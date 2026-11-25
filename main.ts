@@ -15,7 +15,7 @@
 //   - The last word reframes the five before it: the payday was
 //     never about the money, it was about who owns the worker.
 
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const ENTRY = "Payday finally came. I bought myself.";
 
@@ -38,4 +38,10 @@ function validate(text: string): void {
 validate(ENTRY);
 mkdirSync("/output", { recursive: true });
 writeFileSync("/output/entry.txt", ENTRY, "utf8");
+// Round-trip: prove the file on disk is exactly the gated entry.
+const written = readFileSync("/output/entry.txt", "utf8");
+if (written !== ENTRY) {
+  throw new Error("entry.txt on disk differs from the gated entry");
+}
+validate(written);
 console.log(`wrote ${ENTRY.length} chars, 6 words: ${ENTRY}`);
